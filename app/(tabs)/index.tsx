@@ -3,6 +3,8 @@ import { View, StyleSheet, ScrollView } from "react-native";
 import TopHeader from "../components/Home/TopHeader";
 import GlassEffectBoxes from "../components/Home/GlassEffectBoxes";
 import Header from "../components/Home/Header";
+import StreakBox from "../components/Home/StreakBox";
+import FirstGraph from "../components/Home/FirstGraph";
 
 const Index = () => {
   return (
@@ -28,6 +30,15 @@ const Index = () => {
           contentContainerStyle={styles.scrollContent}
         >
           <GlassEffectBoxes />
+          <StreakBox/>
+          <FirstGraph
+  // data={apiResponse.dailyAmounts}   // number[]
+  labels={["Week1","Week2","Week3","Week4"]}
+  pointsPerLabel={7}                // if 7 days per week
+  enableWeekFilter={true}
+/>
+
+
           <View style={{ height: 900 }} />
         </ScrollView>
       </View>

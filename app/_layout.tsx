@@ -56,6 +56,8 @@ export default function RootLayout() {
     "Roboto-Regular": require("../assets/fonts/Roboto-Regular.ttf"),
     "Roboto-SemiBold": require("../assets/fonts/Roboto-SemiBold.ttf"),
 
+    "ProtestRiot-Regular": require("../assets/fonts/ProtestRiot-Regular.ttf"),
+
     "Geist-SemiBold": require("../assets/fonts/Geist-SemiBold.ttf"),
 
     // --- Others
