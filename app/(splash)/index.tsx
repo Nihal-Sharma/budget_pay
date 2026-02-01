@@ -6,7 +6,7 @@ import { router } from "expo-router";
 const Index = () => {
   useEffect(() => {
     const t = setTimeout(() => {
-      router.replace("/Login/Login"); // ✅ change this route if you want
+      router.replace("/(tabs)"); // ✅ change this route if you want
     }, 3000);
 
     return () => clearTimeout(t);
