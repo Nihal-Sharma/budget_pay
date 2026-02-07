@@ -16,22 +16,44 @@ type BoxItem = {
   };
 };
 
-const GlassEffectBoxes = () => {
+type Props = {
+  monthlyIncome: number;
+  monthlySpend: number;
+  saving: number; // or monthlyRemaining if you have that
+};
+
+const formatINR = (n: number) => {
+  try {
+    return new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(n);
+  } catch {
+    return String(Math.round(n));
+  }
+};
+
+const GlassEffectBoxes: React.FC<Props> = ({ monthlyIncome, monthlySpend, saving }) => {
+  const remaining = Math.max(monthlyIncome - monthlySpend, 0);
+
+  const savingsPct = monthlyIncome > 0 ? (saving / monthlyIncome) * 100 : 0;
+
   const data: BoxItem[] = useMemo(
     () => [
-      { id: "income", title: "Monthly Income", value: "₹20,000" },
+      {
+        id: "income",
+        title: "Monthly Income",
+        value: `₹${formatINR(monthlyIncome)}`,
+      },
       {
         id: "remaining",
         title: "Monthly Remaining",
-        value: "₹20,000",
-        subText: "No spending yet",
-        subColor: "#ff3b30",
+        value: `₹${formatINR(remaining)}`,
+        subText: monthlySpend > 0 ? "After spending" : "No spending yet",
+        subColor: monthlySpend > 0 ? "rgba(255,255,255,0.75)" : "#ff3b30",
         badge: { bg: "#ff3b30", icon: "trending-down" },
       },
       {
         id: "spent",
         title: "Monthly Spent",
-        value: "₹20,000",
+        value: `₹${formatINR(monthlySpend)}`,
         subText: "Monthly Total",
         subColor: "#34c759",
         badge: { bg: "#34c759", icon: "trending-up" },
@@ -39,12 +61,12 @@ const GlassEffectBoxes = () => {
       {
         id: "savings",
         title: "Savings Progress",
-        value: "125.8%",
-        subText: "₹12,581 / ₹10,000",
+        value: `${savingsPct.toFixed(1)}%`,
+        subText: `₹${formatINR(saving)} saved`,
         subColor: "rgba(255,255,255,0.75)",
       },
     ],
-    []
+    [monthlyIncome, monthlySpend, saving, remaining, savingsPct]
   );
 
   return (
@@ -52,10 +74,8 @@ const GlassEffectBoxes = () => {
       <View style={styles.grid}>
         {data.map((item) => (
           <View key={item.id} style={styles.cardOuter}>
-            {/* ✅ Glass */}
             <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
 
-            {/* ✅ Top inner highlight ONLY (thin strip) */}
             <LinearGradient
               colors={["rgba(255,255,255,0.28)", "rgba(255,255,255,0.00)"]}
               start={{ x: 0, y: 0 }}
@@ -63,7 +83,6 @@ const GlassEffectBoxes = () => {
               style={styles.topHighlight}
             />
 
-            {/* ✅ Bottom inner shadow */}
             <LinearGradient
               colors={["rgba(0,0,0,0.00)", "rgba(0,0,0,0.60)"]}
               start={{ x: 0.5, y: 0.2 }}
@@ -71,7 +90,6 @@ const GlassEffectBoxes = () => {
               style={styles.bottomShadow}
             />
 
-            {/* ✅ Content */}
             <View style={styles.cardContent}>
               {item.badge ? (
                 <View style={[styles.badge, { backgroundColor: item.badge.bg }]}>
@@ -98,7 +116,7 @@ const GlassEffectBoxes = () => {
 export default GlassEffectBoxes;
 
 const styles = StyleSheet.create({
-  wrapper: { paddingTop: 6, },
+  wrapper: { paddingTop: 6 },
 
   grid: {
     flexDirection: "row",
@@ -112,13 +130,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: "hidden",
     marginBottom: 12,
-
-    // ✅ Stroke
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.18)",
-
     backgroundColor: "rgba(255,255,255,0.04)",
-
     shadowColor: "#000",
     shadowOpacity: 0.45,
     shadowRadius: 14,
@@ -126,16 +140,14 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
 
-  // ✅ only a thin strip on top
   topHighlight: {
     position: "absolute",
     left: 0,
     right: 0,
     top: 0,
-    height: 8, // 👈 adjust: 16-26 looks best
+    height: 8,
   },
 
-  // ✅ shadow can stay full but better to focus bottom
   bottomShadow: {
     position: "absolute",
     left: 0,

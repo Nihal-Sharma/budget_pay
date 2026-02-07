@@ -5,13 +5,14 @@ import GlassEffectBoxes from "../components/Home/GlassEffectBoxes";
 import Header from "../components/Home/Header";
 import StreakBox from "../components/Home/StreakBox";
 import FirstGraph from "../components/Home/FirstGraph";
+import data from '../../store/data.json'
 
 const Index = () => {
   return (
     <View style={styles.screen}>
       <View style={styles.topArea}>
         <TopHeader
-          name="Nihal Sharma"
+          name={data.name}
           onPressBell={() => console.log("bell")}
           onPressProfile={() => console.log("profile")}
         />
@@ -29,7 +30,11 @@ const Index = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          <GlassEffectBoxes />
+          <GlassEffectBoxes
+  monthlyIncome={data.monthlyIncome}
+  monthlySpend={data.monthlySpend}
+  saving={data.saving}
+/>
           <StreakBox/>
           <FirstGraph
   // data={apiResponse.dailyAmounts}   // number[]
