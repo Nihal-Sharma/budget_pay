@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  BackHandler,
 } from "react-native";
 
 import TopHeader from "../components/Home/TopHeader";
@@ -38,7 +39,7 @@ const Index = () => {
   const [nameInput, setNameInput] = useState("");
   const [incomeInput, setIncomeInput] = useState("");
   const [keyboardOffset, setKeyboardOffset] = useState(0);
-
+  
   /* ================= KEYBOARD LISTENERS ================= */
   useEffect(()=>{
     if(userData){
@@ -66,14 +67,30 @@ const Index = () => {
       keyboardDidHideListener.remove();
     };
   }, []);
+ useEffect(() => {
+  if (Platform.OS !== "android") return;
 
+  const backHandler = BackHandler.addEventListener(
+    "hardwareBackPress",
+    () => {
+      BackHandler.exitApp(); // 🚪 exit app
+      return true; // ⛔ prevent default behavior
+    }
+  );
+
+  return () => backHandler.remove();
+}, []);
   /* ================= LOAD USER ================= */
 
 
   /* ================= SHOW MODAL IF INCOME MISSING ================= */
 
-  useEffect(() => {
-    if (userData && (!userData.income || userData.income === 0)) {
+useEffect(() => {
+  if (!userData) return;
+
+  // only trigger when income is missing AND modal not already shown
+  if ((userData.income === 0 || userData.income == null) && !showModal) {
+    const timer = setTimeout(() => {
       setNameInput(userData.name ?? "");
       setShowModal(true);
 
@@ -83,8 +100,13 @@ const Index = () => {
         stiffness: 120,
         useNativeDriver: true,
       }).start();
-    }
-  }, [userData]);
+    }, 2000); // ⏱️ 2 seconds delay
+
+    // cleanup (very important)
+    return () => clearTimeout(timer);
+  }
+}, [userData, showModal]);
+
 
   /* ================= SAVE PROFILE ================= */
 
@@ -99,24 +121,24 @@ const Index = () => {
       return;
     }
 
-    const updatedUser = {
+    const updatedUserData = {
       
       name: nameInput.trim(),
       income: Number(incomeInput),
     };
     
-
+    console.warn(userData)
     // CALL FOR UPDATION API
-    const response =await updateUser(userData?._id , {...updatedUser})
-    if(response == 201){
-      alert("Cannot save data")
+    const updatedUser = await updateUser(
+      userData?._id,
+      updatedUserData
+    );
+
+    if (!updatedUser) {
+      alert("Failed to save data");
+      return;
     }
-    if(response == 404){
-      alert("Internal server error")
-    }
-    else{
-      setUser(response);
-    }
+    setUser(updatedUser); // ✅ always valid user object
 
     Animated.timing(slideAnim, {
       toValue: 420,

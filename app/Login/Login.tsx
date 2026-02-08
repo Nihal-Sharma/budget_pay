@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingView,
   TextInput,
   Keyboard,
+  BackHandler,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -48,7 +49,19 @@ const Login = () => {
       keyboardDidHideListener.remove();
     };
   }, []);
+  useEffect(() => {
+  if (Platform.OS !== "android") return;
 
+  const backHandler = BackHandler.addEventListener(
+    "hardwareBackPress",
+    () => {
+      BackHandler.exitApp(); // 🚪 exit app
+      return true; // ⛔ prevent default behavior
+    }
+  );
+
+  return () => backHandler.remove();
+}, []);
   const openModal = () => {
     setShowModal(true);
     Animated.spring(slideAnim, {
@@ -125,17 +138,13 @@ const handleSignup = async() => {
     return;
   }
    const response = await signUpUser(trimmedEmail, trimmedPassword);
-  if(response == 201){
-      alert("Email already exists ")
+   console.warn(response)
+ if(!response){
+   alert("Cannot generate Profile")
+  return
   }
-  if(response == 404){
-    alert("Internal server error")
-  }
-   else{
-    setUser(response)
-    router.replace("/(tabs)")
-  }
-
+  setUser(response)
+  router.replace("/(tabs)")
   // ✅ All validations passed
   
 };
@@ -173,18 +182,13 @@ const handleSignup = async() => {
 
   // ✅ All validations passed → call login
  const response = await login(trimmedEmail, trimmedPassword);
- if(response == 201){
-      alert("Credentials doesnt match")
-  }
-  if(response == 404){
-    alert("Internal server error")
-  }
- else{
-    setUser(response)
-    router.replace("/(tabs)")
-  }
-  
-
+ 
+ if(!response){
+  alert("Failed to save data");
+  return;
+ }
+ setUser(response)
+ router.replace("/(tabs)")
 };
   return (
     <LinearGradient

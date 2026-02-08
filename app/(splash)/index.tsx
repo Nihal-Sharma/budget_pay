@@ -2,11 +2,16 @@ import React, { useEffect } from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
+import { useUserStore } from "@/store/userStore";
 
 const Index = () => {
+  const user = useUserStore((s)=>s.user)
   useEffect(() => {
     const t = setTimeout(() => {
-      router.replace("/Login/Login"); // ✅ change this route if you want
+      if(user){
+        router.replace("/(tabs)")
+      }
+      else{router.replace("/Login/Login");} // ✅ change this route if you want
     }, 3000);
 
     return () => clearTimeout(t);

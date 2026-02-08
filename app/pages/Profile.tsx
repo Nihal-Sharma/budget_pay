@@ -4,16 +4,17 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUserStore } from "@/store/userStore";
 
 const Profile = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-
+  const clearUser = useUserStore((s)=>s.clearUser)
   const onLogout = async () => {
     try {
       // ✅ clear stored auth/session data (adjust keys if you use specific ones)
       await AsyncStorage.clear();
-
+      clearUser()
       // ✅ go to login (change route if your login file is different)
       router.replace("/Login/Login");
     } catch (e) {
