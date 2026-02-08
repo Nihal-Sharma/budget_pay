@@ -21,10 +21,14 @@ import StreakBox from "../components/Home/StreakBox";
 import FirstGraph from "../components/Home/FirstGraph";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUserStore } from "@/store/userStore";
+import { updateUser } from "@/apiCalls/Login";
 
 const Index = () => {
   const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState<any>(null);
+ const userData = useUserStore((s)=>s.user)
+  const setUser = useUserStore((s)=>s.setUser)
+ 
 
   /* ================= MODAL STATE ================= */
 
@@ -36,6 +40,11 @@ const Index = () => {
   const [keyboardOffset, setKeyboardOffset] = useState(0);
 
   /* ================= KEYBOARD LISTENERS ================= */
+  useEffect(()=>{
+    if(userData){
+      setLoading(false)
+    }
+  },[userData])
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -60,14 +69,6 @@ const Index = () => {
 
   /* ================= LOAD USER ================= */
 
-  useEffect(() => {
-    (async () => {
-      const raw = await AsyncStorage.getItem("user");
-      const user = raw ? JSON.parse(raw) : null;
-      setUserData(user);
-      setLoading(false);
-    })();
-  }, []);
 
   /* ================= SHOW MODAL IF INCOME MISSING ================= */
 
@@ -99,13 +100,23 @@ const Index = () => {
     }
 
     const updatedUser = {
-      ...userData,
+      
       name: nameInput.trim(),
       income: Number(incomeInput),
     };
+    
 
-    await AsyncStorage.setItem("user", JSON.stringify(updatedUser));
-    setUserData(updatedUser);
+    // CALL FOR UPDATION API
+    const response =await updateUser(userData?._id , {...updatedUser})
+    if(response == 201){
+      alert("Cannot save data")
+    }
+    if(response == 404){
+      alert("Internal server error")
+    }
+    else{
+      setUser(response);
+    }
 
     Animated.timing(slideAnim, {
       toValue: 420,

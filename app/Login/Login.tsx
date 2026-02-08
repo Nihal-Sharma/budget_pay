@@ -17,6 +17,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { ScrollView } from "react-native";
 import { login ,signUpUser} from "@/apiCalls/Login";
+import { useUserStore } from "@/store/userStore";
 
 const Login = () => {
   const [showModal, setShowModal] = useState(false);
@@ -26,6 +27,7 @@ const Login = () => {
   const [pass , setPassword] = useState("")
   const [signUp , setSignUp] = useState(false)
   const [confirm , setConfirm] = useState("")
+  const setUser = useUserStore((s)=>s.setUser)
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
@@ -123,12 +125,17 @@ const handleSignup = async() => {
     return;
   }
    const response = await signUpUser(trimmedEmail, trimmedPassword);
-  if(response ==200){
-    router.replace("/(tabs)")
-  }
   if(response == 201){
       alert("Email already exists ")
   }
+  if(response == 404){
+    alert("Internal server error")
+  }
+   else{
+    setUser(response)
+    router.replace("/(tabs)")
+  }
+
   // ✅ All validations passed
   
 };
@@ -166,12 +173,17 @@ const handleSignup = async() => {
 
   // ✅ All validations passed → call login
  const response = await login(trimmedEmail, trimmedPassword);
-  if(response ==200){
-    router.replace("/(tabs)")
-  }
-  if(response == 201){
+ if(response == 201){
       alert("Credentials doesnt match")
   }
+  if(response == 404){
+    alert("Internal server error")
+  }
+ else{
+    setUser(response)
+    router.replace("/(tabs)")
+  }
+  
 
 };
   return (

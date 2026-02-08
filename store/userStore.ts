@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /* ================= TYPES ================= */
 
@@ -11,6 +13,7 @@ export interface User {
   lastLoginAt?: Date;
   income: number;
   monthlySpend: number;
+  _id :any
 }
 
 /* ================= STORE ================= */
@@ -25,24 +28,35 @@ interface UserStore {
 
 /* ================= IMPLEMENTATION ================= */
 
-export const useUserStore = create<UserStore>((set) => ({
-  user: null,
-
-  // Set full user (login / signup)
-  setUser: (user) =>
-    set({
-      user,
-    }),
-
-  // Update partial user fields (profile edit, income update, etc.)
-  updateUser: (data) =>
-    set((state) => ({
-      user: state.user ? { ...state.user, ...data } : null,
-    })),
-
-  // Clear user (logout)
-  clearUser: () =>
-    set({
+export const useUserStore = create<UserStore>()(
+  persist(
+    (set) => ({
       user: null,
+
+      // Set full user (login / signup)
+      setUser: (user) =>
+        set({
+          user,
+        }),
+
+      // Update partial user fields
+      updateUser: (data) =>
+        set((state) => ({
+          user: state.user ? { ...state.user, ...data } : null,
+        })),
+
+      // Clear user (logout)
+      clearUser: () =>
+        set({
+          user: null,
+        }),
     }),
-}));
+    {
+      name: "user-storage", // AsyncStorage key
+      storage: createJSONStorage(() => AsyncStorage),
+
+      // Optional: persist only user
+      partialize: (state) => ({ user: state.user }),
+    }
+  )
+);
