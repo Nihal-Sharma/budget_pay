@@ -1,18 +1,25 @@
 import React from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
+
 import TopHeader from "../components/Home/TopHeader";
-import GlassEffectBoxes from "../components/Home/GlassEffectBoxes";
 import Header from "../components/Home/Header";
+import GlassEffectBoxes from "../components/Home/GlassEffectBoxes";
 import StreakBox from "../components/Home/StreakBox";
 import FirstGraph from "../components/Home/FirstGraph";
-import data from '../../store/data.json'
+
+import data from "../../store/data.json";
 
 const Index = () => {
+  const name = data.user.name;
+  const monthlyIncome = data.user.monthlyIncome;
+  const monthlySpend = data.user.monthlySpend;
+  const saving = data.user.saving;
+
   return (
     <View style={styles.screen}>
       <View style={styles.topArea}>
         <TopHeader
-          name={data.name}
+          name={name}
           onPressBell={() => console.log("bell")}
           onPressProfile={() => console.log("profile")}
         />
@@ -20,7 +27,7 @@ const Index = () => {
       </View>
 
       <View style={styles.bottomSheet}>
-        {/* ✅ Handle Line (fixed) */}
+        {/* ✅ Handle Line */}
         <View style={styles.handleWrap}>
           <View style={styles.handle} />
         </View>
@@ -31,18 +38,18 @@ const Index = () => {
           contentContainerStyle={styles.scrollContent}
         >
           <GlassEffectBoxes
-  monthlyIncome={data.monthlyIncome}
-  monthlySpend={data.monthlySpend}
-  saving={data.saving}
-/>
-          <StreakBox/>
-          <FirstGraph
-  // data={apiResponse.dailyAmounts}   // number[]
-  labels={["Week1","Week2","Week3","Week4"]}
-  pointsPerLabel={7}                // if 7 days per week
-  enableWeekFilter={true}
-/>
+            monthlyIncome={monthlyIncome}
+            monthlySpend={monthlySpend}
+            saving={saving}
+          />
 
+          <StreakBox />
+
+          <FirstGraph
+            labels={["Week1", "Week2", "Week3", "Week4"]}
+            pointsPerLabel={7}
+            enableWeekFilter={true}
+          />
 
           <View style={{ height: 900 }} />
         </ScrollView>
