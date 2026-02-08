@@ -150,7 +150,7 @@ const Index = () => {
         <TopHeader
           name={name}
           onPressBell={() => console.log("bell")}
-          onPressProfile={() => console.log("profile")}
+         
         />
         <Header />
       </View>

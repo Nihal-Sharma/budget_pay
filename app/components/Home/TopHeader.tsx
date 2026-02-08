@@ -3,12 +3,13 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import Octicons from '@expo/vector-icons/Octicons';
+import Octicons from "@expo/vector-icons/Octicons";
+import { useRouter } from "expo-router";
 
 type Props = {
   name?: string;
   onPressBell?: () => void;
-  onPressProfile?: () => void;
+  onPressProfile?: () => void; // optional override
 };
 
 const TopHeader: React.FC<Props> = ({
@@ -16,6 +17,15 @@ const TopHeader: React.FC<Props> = ({
   onPressBell,
   onPressProfile,
 }) => {
+  const router = useRouter();
+
+  const handleProfilePress = () => {
+  if (onPressProfile) return onPressProfile();
+
+  console.log("Profile pressed ✅");
+  router.push({ pathname: "/pages/Profile" });
+};
+
   return (
     <LinearGradient
       colors={["#101010", "#101010"]}
@@ -43,11 +53,10 @@ const TopHeader: React.FC<Props> = ({
 
             <TouchableOpacity
               activeOpacity={0.85}
-              onPress={onPressProfile}
+              onPress={handleProfilePress}
               style={styles.iconBtn}
             >
               <Ionicons name="person" size={26} color="#fff" />
-              
             </TouchableOpacity>
           </View>
         </View>
@@ -59,9 +68,7 @@ const TopHeader: React.FC<Props> = ({
 export default TopHeader;
 
 const styles = StyleSheet.create({
-  gradient: {
-    width: "100%",
-  },
+  gradient: { width: "100%" },
   safe: {
     paddingHorizontal: 16,
     paddingBottom: 12,
@@ -72,9 +79,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     justifyContent: "space-between",
   },
-  left: {
-    justifyContent: "center",
-  },
+  left: { justifyContent: "center" },
   hello: {
     color: "#FFFFFF",
     fontSize: 18,
@@ -83,7 +88,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   name: {
-    color: "#21C36B", // green like screenshot
+    color: "#21C36B",
     fontSize: 28,
     fontFamily: "Poppins-SemiBold",
     lineHeight: 34,
